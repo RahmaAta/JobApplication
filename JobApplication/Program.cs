@@ -1,5 +1,8 @@
-using Microsoft.EntityFrameworkCore;
+using JobApplication.Application.Interfaces;
+using JobApplication.Application.Services;
 using JobApplication.Infrastructure.Persistence;
+using JobApplication.Infrastructure.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +18,8 @@ var connectionString =
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped<JobService>();
+builder.Services.AddScoped<IJobRepository, JobRepository>();
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
