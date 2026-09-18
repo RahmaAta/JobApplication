@@ -1,6 +1,20 @@
 @JobApplication_HostAddress = http://localhost:5113
 
-GET {{JobApplication_HostAddress}}/weatherforecast/
+### Create a Job
+POST {{JobApplication_HostAddress}}/api/jobs
+Content-Type: application/json
+
+{
+  "title": "Senior .NET Developer",
+  "description": "Backend engineer specializing in .NET and EF Core"
+}
+
+### Cancel an Application (via query param)
+DELETE {{JobApplication_HostAddress}}/api/applications/1?candidateId=1
 Accept: application/json
 
-###
+### Cancel an Application (via X-Candidate-Id header)
+DELETE {{JobApplication_HostAddress}}/api/applications/1
+X-Candidate-Id: 1
+Accept: application/json
+

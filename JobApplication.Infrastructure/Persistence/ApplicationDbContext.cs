@@ -1,4 +1,4 @@
-﻿using JobApplication.Domain.Entities;
+using JobApplication.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
