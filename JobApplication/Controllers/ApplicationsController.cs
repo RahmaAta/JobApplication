@@ -1,12 +1,15 @@
 using JobApplication.Application.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace JobApplication.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ApplicationsController : ControllerBase
@@ -19,19 +22,20 @@ namespace JobApplication.API.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Cancel(int id, [FromQuery] int? candidateId,
-            [FromHeader(Name = "X-Candidate-Id")] int? headerCandidateId,
-            [FromHeader(Name = "CandidateId")] int? altHeaderCandidateId)
+        public async Task<IActionResult> Cancel(int id)
         {
-            var resolvedCandidateId = candidateId ?? headerCandidateId ?? altHeaderCandidateId;
-            if (!resolvedCandidateId.HasValue || resolvedCandidateId.Value <= 0)
+            var candidateIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                                  ?? User.FindFirst("CandidateId")?.Value
+                                  ?? User.FindFirst("sub")?.Value;
+
+            if (string.IsNullOrEmpty(candidateIdClaim) || !int.TryParse(candidateIdClaim, out var candidateId) || candidateId <= 0)
             {
-                return BadRequest(new { message = "CandidateId is required to verify ownership. Provide it via query parameter 'candidateId' or 'X-Candidate-Id' header." });
+                return Unauthorized(new { message = "User is not authenticated or candidate ID is invalid." });
             }
 
             try
             {
-                await _applicationService.Cancel(id, resolvedCandidateId.Value);
+                await _applicationService.Cancel(id, candidateId);
                 return Ok(new { message = "Application cancelled successfully." });
             }
             catch (KeyNotFoundException ex)

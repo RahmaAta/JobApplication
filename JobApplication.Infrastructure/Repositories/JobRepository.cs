@@ -1,6 +1,7 @@
-﻿using JobApplication.Application.Interfaces;
+using JobApplication.Application.Interfaces;
 using JobApplication.Domain.Entities;
 using JobApplication.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,6 +15,11 @@ namespace JobApplication.Infrastructure.Repositories
         public JobRepository(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<Job?> GetByIdAsync(int id)
+        {
+            return await _context.Jobs.FirstOrDefaultAsync(j => j.Id == id);
         }
 
         public async Task InsertAsync(Job job )

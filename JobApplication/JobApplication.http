@@ -1,13 +1,38 @@
 @JobApplication_HostAddress = http://localhost:5113
 
-### Create a Job
+### Register Recruiter
+POST {{JobApplication_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "recruiter@example.com",
+  "password": "Password123!",
+  "role": "Recruiter"
+}
+
+### Login Recruiter
+POST {{JobApplication_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "recruiter@example.com",
+  "password": "Password123!"
+}
+
+### Create a Job (Authenticated)
 POST {{JobApplication_HostAddress}}/api/jobs
 Content-Type: application/json
+Authorization: Bearer <TOKEN>
 
 {
   "title": "Senior .NET Developer",
   "description": "Backend engineer specializing in .NET and EF Core"
 }
+
+### Close a Job (Authenticated)
+PUT {{JobApplication_HostAddress}}/api/jobs/1/close
+Authorization: Bearer <TOKEN>
+Accept: application/json
 
 ### Cancel an Application (via query param)
 DELETE {{JobApplication_HostAddress}}/api/applications/1?candidateId=1
@@ -17,4 +42,5 @@ Accept: application/json
 DELETE {{JobApplication_HostAddress}}/api/applications/1
 X-Candidate-Id: 1
 Accept: application/json
+
 
