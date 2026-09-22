@@ -1,3 +1,4 @@
+using JobApplication.Application;
 using JobApplication.Application.Interfaces;
 using JobApplication.Application.Services;
 using JobApplication.Infrastructure.Persistence;
@@ -20,6 +21,8 @@ var connectionString =
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddApplication();
 
 // Register Repositories and Services
 builder.Services.AddScoped<IJobRepository, JobRepository>();
