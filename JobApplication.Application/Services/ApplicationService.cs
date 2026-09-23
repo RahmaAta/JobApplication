@@ -44,7 +44,5 @@ namespace JobApplication.Application.Services
             _applicationRepository.Update(application);
             await _applicationRepository.SaveChangesAsync();
         }
-
-        public Task CancelAsync(int applicationId, int candidateId) => Cancel(applicationId, candidateId);
     }
 }

@@ -1,5 +1,8 @@
 using JobApplication.Application.DTOs;
 using JobApplication.Application.Services;
+using JobApplication.Application.Features.Jobs.Commands.CreateJob;
+using JobApplication.Application.Features.Jobs.Commands.CloseJob;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +17,11 @@ namespace JobApplication.API.Controllers
     [ApiController]
     public class JobsController : ControllerBase
     {
-        private readonly JobService _JobService;
+        private readonly IMediator _mediator;
 
-        public JobsController(JobService jobService)
+        public JobsController(IMediator mediator)
         {
-            _JobService = jobService;
+            _mediator = mediator;
         }
 
         [HttpPost]
@@ -28,7 +31,7 @@ namespace JobApplication.API.Controllers
                               ?? User.FindFirst("RecruiterId")?.Value
                               ?? User.FindFirst("sub")?.Value;
 
-            var id = await _JobService.CreateAsync(createJobDto, recruiterId);
+            var id = await _mediator.Send(new CreateJobCommand());
             return Ok(new
             {
                 id = id
@@ -50,7 +53,7 @@ namespace JobApplication.API.Controllers
 
             try
             {
-                await _JobService.Close(id, recruiterId);
+                await _mediator.Send(new CloseJobCommand { JobId = id, AuthenticatedRecruiterId = recruiterId });
                 return Ok(new { message = "Job closed successfully." });
             }
             catch (KeyNotFoundException ex)
